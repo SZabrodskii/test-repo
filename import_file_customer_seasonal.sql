@@ -6,6 +6,7 @@ begin
 declare @RowCount int = (select count(*) from syn.SA_CustomerSeasonal)
 	declare @ErrorMessage varchar(max)
 
+-- Проверка на корректность загрузки
 	if not exists (
 	select 1
 	from syn.ImportFile as f
@@ -13,14 +14,15 @@ declare @RowCount int = (select count(*) from syn.SA_CustomerSeasonal)
 		and f.FlagLoaded = cast(1 as bit)
 	)
 		begin
-set @ErrorMessage = 'Ошибка при загрузке файла, проверьте корректность внесенных данных'
+set @ErrorMessage = 'Ошибка при загрузке файла, проверьте корректность данных'
 
     raiserror(@ErrorMessage, 3, 1)
     return
 end
 
-CREATE TABLE #ProcessedRows(ActionType varchar(100), ID int)
+CREATE TABLE #ProcessedRows(ActionType varchar(255), ID int)
 
+--Чтение из слоя временных данных
 select
     cc.ID as ID_dbo_Customer
      ,cst.ID as ID_CustomerSystemType
